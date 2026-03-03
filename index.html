@@ -3233,59 +3233,49 @@ function spawnConfetti(){
 // ── AI SUAL-CAVAB ──
 let aiHistory=[];
 
-async function sendAI(){
-  const input=document.getElementById('ai-input');
-  const msg=input.value.trim();
-  if(!msg)return;
+async function sendAI() {
+  const input = document.getElementById('ai-input');
+  const msg = input.value.trim();
+  if (!msg) return;
 
-  input.value='';
-  input.style.height='44px';
-  document.getElementById('ai-send-btn').disabled=true;
+  input.value = '';
+  input.style.height = '44px';
+  document.getElementById('ai-send-btn').disabled = true;
 
-  appendAIMsg(msg,'user');
-  const typing=appendTyping();
+  appendAIMsg(msg, 'user');
+  const typing = appendTyping();
 
-  aiHistory.push({role:'user',content:msg});
+  aiHistory.push({ role: 'user', content: msg });
 
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':API_KEY,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system:`Sən Edaz Club adlı Azərbaycan imtahan hazırlıq platformasının AI köməkçisisən. 
-11-ci sinif Azərbaycan məktəb şagirdlərinə kömək edirsən. 
-Sualları həmişə Azərbaycan dilində, sadə, aydın və ADDIM-ADDIM izah et.
-Riyaziyyat suallarında hər addımı göstər.
-Biologiya, tarix, coğrafiya, kimya, fizika suallarını DİM proqramına uyğun izah et.
-İngilis dili suallarında nümunələr ver.
-Cavabın sonu həmişə qısa xülasə ilə bitir.
-Emoji işlət — daha canlı olsun.`,
-        messages:aiHistory.slice(-10)
+  try {
+    const res = await fetch('https://cool-mud-bae0.bthrh5279.workers.dev/', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Sən Edaz Club adlı Azərbaycan imtahan hazırlıq platformasının AI köməkçisisən...`,
+        messages: aiHistory.slice(-10)
       })
     });
 
-    const data=await res.json();
+    const data = await res.json();
     typing.remove();
 
-    if(data.content&&data.content[0]){
-      const reply=data.content[0].text;
-      aiHistory.push({role:'assistant',content:reply});
-      appendAIMsg(reply,'bot');
+    if (data.content && data.content[0]) {
+      const reply = data.content[0].text;
+      aiHistory.push({ role: 'assistant', content: reply });
+      appendAIMsg(reply, 'bot');
     } else {
-      appendAIMsg('Üzr istəyirəm, cavab ala bilmədim. Yenidən cəhd et.','bot');
+      appendAIMsg('Xəta: ' + JSON.stringify(data.error), 'bot');
     }
-  }catch(e){
+  } catch (e) {
     typing.remove();
-    appendAIMsg('Xəta baş verdi. İnternet bağlantını yoxla.','bot');
+    appendAIMsg('Xəta: ' + e.message, 'bot');
   }
-  document.getElementById('ai-send-btn').disabled=false;
+  document.getElementById('ai-send-btn').disabled = false;
 }
 
 function appendAIMsg(text,role){
@@ -3784,3 +3774,4 @@ function backBlok(){
 </script>
 </body>
 </html>
+
