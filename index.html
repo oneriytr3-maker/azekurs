@@ -1,10 +1,904 @@
-og-bar"><div class="te-prog-fill" id="te-prog-fill" style="width:0%"></div></div>
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Edaz Club</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#08090e;--bg2:#0d0e16;
+  --surface:#12131f;--surface2:#1c1d2e;--surface3:#24263a;
+  --accent:#7b6ef6;--accent-glow:rgba(123,110,246,0.25);
+  --accent2:#f0649a;--accent3:#38d9a9;--accent4:#ffa94d;
+  --text:#eeeef5;--text2:#9898b0;--text3:#5a5a72;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --radius:16px;--sw:270px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;opacity:.4;}
+.amb{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;}
+.amb1{width:700px;height:700px;top:-250px;left:-150px;background:rgba(123,110,246,0.07);}
+.amb2{width:500px;height:500px;bottom:-150px;right:-100px;background:rgba(240,100,154,0.05);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:rgba(8,9,14,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:1.35rem;letter-spacing:-.5px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 8px var(--accent);}50%{box-shadow:0 0 22px var(--accent),0 0 44px var(--accent-glow);}}
+.logo span{color:var(--accent);}
+.nav-center{display:flex;gap:4px;align-items:center;}
+.nav-btn{padding:6px 13px;border-radius:9px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:0.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap;}
+.nav-btn:hover,.nav-btn.active{color:var(--text);background:var(--surface2);}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s;}
+
+/* SIDEBAR */
+.layout{display:flex;min-height:100vh;padding-top:60px;}
+.sidebar{width:var(--sw);position:fixed;top:60px;left:0;bottom:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 10px 40px;z-index:400;transition:transform .3s;}
+.sidebar::-webkit-scrollbar{width:0;}
+.sg{margin-bottom:4px;}
+.sg-label{font-size:.65rem;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text3);padding:12px 12px 5px;}
+.si{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:10px;cursor:pointer;color:var(--text2);font-size:.83rem;font-weight:500;transition:all .18s;text-decoration:none;user-select:none;}
+.si:hover{background:var(--surface2);color:var(--text);}
+.si.active{background:linear-gradient(135deg,rgba(123,110,246,.18),rgba(123,110,246,.06));color:var(--accent);border:1px solid rgba(123,110,246,.2);}
+.si .ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;background:var(--surface2);flex-shrink:0;}
+.si.active .ico{background:rgba(123,110,246,.15);}
+.sb{margin-left:auto;background:var(--accent);color:#fff;font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:100px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350;backdrop-filter:blur(2px);}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;position:relative;z-index:1;}
+.page{display:none;padding:28px 32px 60px;animation:fadeIn .3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* PAGE HEADER */
+.ph{margin-bottom:24px;}
+.ptag{display:inline-flex;align-items:center;gap:6px;background:rgba(123,110,246,.1);border:1px solid rgba(123,110,246,.25);color:var(--accent);padding:4px 11px;border-radius:100px;font-size:.72rem;font-weight:700;letter-spacing:.5px;margin-bottom:10px;}
+.ptitle{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;line-height:1.1;letter-spacing:-.8px;margin-bottom:8px;}
+.ptitle em{font-style:italic;color:var(--accent);}
+.psub{color:var(--text2);font-size:.9rem;line-height:1.65;max-width:540px;}
+
+/* COUNTDOWN */
+.cdw{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:20px 24px;margin-bottom:22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;position:relative;overflow:hidden;}
+.cdw::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(123,110,246,.05),transparent);pointer-events:none;}
+.cdw-lbl{font-size:.78rem;color:var(--text2);font-weight:600;white-space:nowrap;}
+.cdw-digits{display:flex;align-items:center;gap:10px;}
+.cdw-blk{text-align:center;}
+.cdw-num{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--accent);line-height:1;min-width:48px;display:block;}
+.cdw-unit{font-size:.6rem;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.cdw-sep{font-size:1.6rem;color:var(--text3);margin-bottom:12px;}
+.cdw-tabs{margin-left:auto;display:flex;gap:6px;}
+.cdw-tab{padding:6px 12px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.cdw-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
+.sbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;transition:border-color .2s;}
+.sbox:hover{border-color:var(--border2);}
+.sbox::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sc,var(--accent));}
+.snum{font-family:'Fraunces',serif;font-size:1.9rem;font-weight:700;color:var(--sc,var(--accent));line-height:1;margin-bottom:5px;}
+.slbl{font-size:.74rem;color:var(--text2);}
+
+/* HOME GRID */
+.hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.hcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;}
+.hcard::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--c,var(--accent));transform:scaleX(0);transition:transform .25s;transform-origin:left;}
+.hcard:hover{border-color:var(--border2);transform:translateY(-2px);background:var(--surface2);}
+.hcard:hover::before{transform:scaleX(1);}
+.hc-ico{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:12px;background:var(--ci,rgba(123,110,246,.1));}
+.hc-title{font-weight:700;font-size:.9rem;margin-bottom:4px;}
+.hc-desc{font-size:.75rem;color:var(--text2);line-height:1.5;}
+
+/* TABS */
+.tabs{display:flex;gap:7px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{padding:7px 16px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.tab:hover:not(.active){background:var(--surface2);color:var(--text);}
+
+/* PANELS */
+.panel{display:none;}.panel.active{display:block;}
+
+/* FORMULA SECTION */
+.fsec{margin-bottom:24px;}
+.fsec-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.fsec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+.fcard{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px 18px;transition:all .2s;}
+.fcard:hover{border-color:var(--border2);background:var(--surface2);}
+.fn{font-size:.72rem;color:var(--text2);margin-bottom:7px;font-weight:500;}
+.ff{font-family:'Courier New',monospace;font-size:1rem;color:var(--accent4);font-weight:700;margin-bottom:6px;}
+.fd{font-size:.72rem;color:var(--text3);line-height:1.5;}
+
+/* GLOSSARY */
+.sbox-input{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border2);border-radius:11px;padding:11px 16px;margin-bottom:18px;}
+.sbox-input input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:.88rem;}
+.sbox-input input::placeholder{color:var(--text3);}
+.glist{display:flex;flex-direction:column;gap:9px;}
+.gitem{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px 18px;transition:all .2s;}
+.gitem:hover{border-color:var(--border2);}
+.gterm{font-weight:700;font-size:.92rem;color:var(--accent);margin-bottom:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.gtag{font-size:.64rem;background:var(--surface2);color:var(--text2);padding:2px 7px;border-radius:5px;font-weight:700;}
+.gdef{font-size:.82rem;color:var(--text2);line-height:1.6;}
+
+/* NOTES */
+.notes-toolbar{display:flex;gap:7px;margin-bottom:13px;flex-wrap:wrap;align-items:center;}
+.tbtn{padding:7px 13px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:.77rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s;}
+.tbtn:hover{background:var(--surface2);color:var(--text);}
+.narea{width:100%;min-height:340px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;color:var(--text);font-family:inherit;font-size:.88rem;line-height:1.75;resize:vertical;outline:none;transition:border-color .2s;}
+.narea:focus{border-color:var(--border2);}
+.narea::placeholder{color:var(--text3);}
+.nsaved{font-size:.72rem;color:var(--accent3);margin-top:7px;opacity:0;transition:opacity .3s;}
+
+/* POMODORO */
+.pomo-center{display:flex;flex-direction:column;align-items:center;gap:24px;padding:10px 0;}
+.pomo-ring{position:relative;width:220px;height:220px;}
+.pomo-ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.pc-bg{fill:none;stroke:var(--surface2);stroke-width:9;}
+.pc-prog{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;stroke-dasharray:628;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .5s;}
+.ptime{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.pnum{font-family:'Fraunces',serif;font-size:2.8rem;font-weight:700;color:var(--text);line-height:1;}
+.pmode{font-size:.68rem;color:var(--text2);margin-top:3px;letter-spacing:1px;text-transform:uppercase;}
+.pctrl{display:flex;gap:10px;}
+.pbtn{padding:11px 24px;border-radius:11px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.pbtn:hover{background:var(--surface2);}
+.pbtn.start{background:var(--accent);border-color:var(--accent);color:#fff;}
+.pbtn.start:hover{background:#6a5fe0;}
+.psets{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.pset{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 18px;text-align:center;cursor:pointer;transition:all .2s;min-width:110px;}
+.pset.active{border-color:var(--accent);background:rgba(123,110,246,.1);}
+.pset-num{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--accent);}
+.pset-lbl{font-size:.68rem;color:var(--text2);margin-top:3px;}
+.pset-input{width:100%;background:transparent;border:none;outline:none;font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--accent);text-align:center;cursor:text;}
+.phist-title{font-size:.72rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;text-align:center;}
+.psessions{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.pdot{width:30px;height:30px;border-radius:7px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:var(--text3);}
+.pdot.done{background:rgba(123,110,246,.2);color:var(--accent);}
+.pdot.brk{background:rgba(56,217,169,.15);color:var(--accent3);}
+
+/* STUDY PLAN */
+.plan-hdr{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+.plan-week{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;}
+.plan-nav{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.8rem;cursor:pointer;font-family:inherit;transition:all .2s;}
+.plan-nav:hover{background:var(--surface2);}
+.pgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+.pday{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:12px 9px;min-height:140px;}
+.pd-hdr{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:3px;}
+.pd-date{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;margin-bottom:8px;}
+.pday.today{border-color:rgba(123,110,246,.4);background:rgba(123,110,246,.06);}
+.pday.today .pd-date{color:var(--accent);}
+.ptask{background:var(--surface2);border-radius:5px;padding:4px 7px;font-size:.62rem;color:var(--text2);margin-bottom:3px;cursor:pointer;border-left:3px solid var(--tc,var(--accent));transition:all .15s;}
+.ptask:hover{background:var(--surface3);}
+.ptask.done{opacity:.45;text-decoration:line-through;}
+.padd{margin-top:5px;font-size:.62rem;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:3px;}
+.padd:hover{color:var(--accent);}
+
+/* ROUTINE */
+.rtl{position:relative;padding-left:28px;}
+.rtl::before{content:'';position:absolute;left:9px;top:0;bottom:0;width:2px;background:var(--border);}
+.rit{position:relative;margin-bottom:12px;}
+.rdot{position:absolute;left:-22px;top:16px;width:11px;height:11px;border-radius:50%;background:var(--ric,var(--accent));box-shadow:0 0 0 3px rgba(123,110,246,.12);}
+.rcard{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;transition:all .2s;cursor:pointer;}
+.rcard:hover{border-color:var(--border2);background:var(--surface2);}
+.rcard.done{opacity:.55;}
+.rcard.done .rt-title{text-decoration:line-through;}
+.rt-time{font-family:'Fraunces',serif;font-size:.95rem;font-weight:700;color:var(--text2);white-space:nowrap;min-width:52px;margin-top:1px;}
+.rt-content{flex:1;}
+.rt-title{font-weight:600;font-size:.87rem;margin-bottom:2px;}
+.rt-desc{font-size:.74rem;color:var(--text2);line-height:1.5;}
+.rt-dur{font-size:.68rem;color:var(--text3);white-space:nowrap;margin-left:auto;flex-shrink:0;}
+.rcheck{width:20px;height:20px;border-radius:5px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;color:transparent;font-size:.65rem;transition:all .2s;flex-shrink:0;margin-top:1px;}
+.rcard.done .rcheck{background:var(--accent3);border-color:var(--accent3);color:#fff;}
+
+/* ACHIEVEMENTS */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
+.bcard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 16px;text-align:center;position:relative;overflow:hidden;transition:all .25s;}
+.bcard.locked{opacity:.4;filter:grayscale(.7);}
+.bcard.unlocked{border-color:rgba(255,169,77,.3);}
+.bcard.unlocked::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,169,77,.08),transparent);}
+.bcard:hover:not(.locked){transform:translateY(-3px);border-color:rgba(255,169,77,.5);}
+.bemo{font-size:2.5rem;margin-bottom:10px;display:block;}
+.bname{font-weight:700;font-size:.86rem;margin-bottom:5px;}
+.bdesc{font-size:.72rem;color:var(--text2);line-height:1.5;}
+.bstat{margin-top:10px;font-size:.66rem;font-weight:700;padding:3px 9px;border-radius:100px;display:inline-block;}
+.bstat.done{background:rgba(255,169,77,.15);color:var(--accent4);}
+.bstat.locked{background:var(--surface2);color:var(--text3);}
+
+/* SUMMARIES */
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 26px;margin-bottom:14px;}
+.sc-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;margin-bottom:5px;}
+.sc-meta{font-size:.72rem;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.sc-tag{background:var(--surface2);padding:2px 8px;border-radius:5px;font-size:.67rem;font-weight:700;}
+.spoints{display:flex;flex-direction:column;gap:9px;}
+.spoint{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--surface2);border-radius:9px;}
+.spnum{width:22px;height:22px;border-radius:5px;background:var(--accent);color:#fff;font-size:.66rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.sptext{font-size:.82rem;color:var(--text2);line-height:1.6;}
+.sptext strong{color:var(--text);}
+
+/* MOTIVATION */
+.mot-main{background:linear-gradient(135deg,rgba(123,110,246,.13),rgba(240,100,154,.08));border:1px solid rgba(123,110,246,.2);border-radius:22px;padding:44px 32px;text-align:center;margin-bottom:22px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.mot-main:hover{transform:scale(1.01);border-color:rgba(123,110,246,.4);}
+.mot-bg{position:absolute;font-size:10rem;font-family:'Fraunces',serif;font-weight:700;color:rgba(123,110,246,.04);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;user-select:none;white-space:nowrap;}
+.mot-e{font-size:2.8rem;margin-bottom:13px;display:block;}
+.mot-q{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;line-height:1.3;margin-bottom:10px;max-width:580px;margin-left:auto;margin-right:auto;}
+.mot-s{color:var(--text2);font-size:.86rem;margin-bottom:16px;}
+.mot-tap{font-size:.7rem;color:rgba(123,110,246,.6);}
+.mot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.mcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center;}
+.mc-e{font-size:1.7rem;margin-bottom:9px;}
+.mc-t{font-size:.8rem;color:var(--text2);line-height:1.55;}
+.mc-a{margin-top:10px;font-size:.68rem;color:var(--text3);font-style:italic;}
+
+/* THEME FAB */
+.tfab{position:fixed;bottom:22px;right:22px;width:44px;height:44px;border-radius:13px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);cursor:pointer;font-size:1.1rem;z-index:600;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.3);}
+.tfab:hover{background:var(--accent);border-color:var(--accent);}
+
+/* LIGHT */
+body.light{--bg:#f0f0f7;--bg2:#e8e8f2;--surface:#fff;--surface2:#f0f0f8;--surface3:#e4e4f0;--text:#0d0e1a;--text2:#5a5a78;--text3:#9898b0;--border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.12);}
+body.light nav{background:rgba(240,240,247,.9);}
+
+/* COMING SOON */
+.coming{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:14px;}
+.coming h2{font-family:'Fraunces',serif;font-size:1.9rem;font-weight:700;}
+.coming p{color:var(--text2);max-width:340px;line-height:1.6;font-size:.9rem;}
+.cbtn{margin-top:6px;padding:11px 22px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-family:inherit;font-weight:700;cursor:pointer;font-size:.88rem;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:960px){
+  .hgrid{grid-template-columns:repeat(2,1fr);}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .mot-grid{grid-template-columns:repeat(2,1fr);}
+  .pgrid{grid-template-columns:repeat(4,1fr);}
+}
+@media(max-width:768px){
+  :root{--sw:260px;}
+  nav{padding:0 14px;}
+  .nav-center{display:none;}
+  .hamburger{display:flex;}
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .overlay{display:block;}
+  .overlay.active{display:block;}
+  .overlay:not(.active){display:none;}
+  .main{margin-left:0!important;}
+  .page{padding:18px 16px 50px;}
+  .ptitle{font-size:1.6rem;}
+  .hgrid{grid-template-columns:repeat(2,1fr);}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .cdw{gap:12px;}
+  .cdw-tabs{margin-left:0;width:100%;}
+  .cdw-num{font-size:1.6rem;min-width:38px;}
+  .mot-grid{grid-template-columns:1fr;}
+  .pgrid{grid-template-columns:repeat(3,1fr);}
+  .bgrid{grid-template-columns:repeat(2,1fr);}
+  .fgrid{grid-template-columns:1fr;}
+  .psets{flex-direction:column;align-items:center;}
+  .pomo-ring{width:190px;height:190px;}
+  .pnum{font-size:2.3rem;}
+  .rtl{padding-left:22px;}
+}
+@media(max-width:480px){
+  .hgrid{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .pgrid{grid-template-columns:repeat(2,1fr);}
+  .bgrid{grid-template-columns:repeat(2,1fr);}
+  .mot-grid{grid-template-columns:1fr;}
+  .cdw-digits{gap:6px;}
+  .cdw-num{font-size:1.4rem;min-width:34px;}
+}
+
+
+/* TEST LANDING */
+.test-landing{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+.tl-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 22px;cursor:pointer;transition:all .25s;text-align:center;position:relative;overflow:hidden;}
+.tl-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;}
+.tl-card:hover{transform:translateY(-4px);border-color:var(--tc,var(--accent));}
+.tl-card:hover::before{opacity:1;}
+.tl-card.az{--tc:#38d9a9;}.tl-card.az::before{background:linear-gradient(135deg,rgba(56,217,169,.08),transparent);}
+.tl-card.math{--tc:#7b6ef6;}.tl-card.math::before{background:linear-gradient(135deg,rgba(123,110,246,.08),transparent);}
+.tl-card.en{--tc:#ffa94d;}.tl-card.en::before{background:linear-gradient(135deg,rgba(255,169,77,.08),transparent);}
+.tl-ico{font-size:2.8rem;margin-bottom:14px;display:block;}
+.tl-name{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;margin-bottom:6px;}
+.tl-count{font-size:.76rem;color:var(--text2);margin-bottom:18px;}
+.tl-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:10px;background:var(--tc,var(--accent));color:#fff;font-size:.8rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s;}
+.tl-btn:hover{opacity:.88;transform:scale(1.04);}
+
+/* TEST ENGINE */
+.test-engine{display:none;}
+.test-engine.active{display:block;}
+.te-header{display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap;}
+.te-back{padding:8px 16px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.te-back:hover{background:var(--surface2);}
+.te-subj{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;}
+.te-progress-wrap{flex:1;min-width:140px;}
+.te-prog-lbl{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text2);margin-bottom:5px;}
+.te-prog-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.te-prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .4s ease;}
+.te-timer{display:flex;align-items:center;gap:6px;background:var(--surface2);padding:7px 13px;border-radius:9px;font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--accent4);}
+.te-timer.danger{color:#ff6b6b;animation:timerDanger .5s infinite alternate;}
+@keyframes timerDanger{from{opacity:1;}to{opacity:.5;}}
+
+/* QUESTION CARD */
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:18px;position:relative;overflow:hidden;}
+.qcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.qnum{font-size:.72rem;color:var(--text3);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.qtext{font-size:1rem;font-weight:600;line-height:1.65;margin-bottom:22px;color:var(--text);}
+
+/* OPTIONS */
+.options{display:flex;flex-direction:column;gap:10px;}
+.opt{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .22s;position:relative;overflow:hidden;}
+.opt:hover:not(.answered){border-color:var(--border2);background:var(--surface3);transform:translateX(4px);}
+.opt-letter{width:30px;height:30px;border-radius:8px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;color:var(--text2);flex-shrink:0;transition:all .2s;}
+.opt-text{font-size:.88rem;line-height:1.5;flex:1;}
+
+/* ANSWER STATES */
+.opt.correct{border-color:#38d9a9;background:rgba(56,217,169,.1);}
+.opt.correct .opt-letter{background:#38d9a9;color:#fff;}
+.opt.wrong{border-color:#ff6b6b;background:rgba(255,107,107,.1);}
+.opt.wrong .opt-letter{background:#ff6b6b;color:#fff;}
+.opt.selected:not(.correct):not(.wrong){border-color:var(--accent);background:rgba(123,110,246,.1);}
+.opt.selected:not(.correct):not(.wrong) .opt-letter{background:var(--accent);color:#fff;}
+
+/* ANSWER ANIMATION */
+@keyframes correctPop{0%{transform:scale(1);}40%{transform:scale(1.03);}100%{transform:scale(1);}}
+@keyframes wrongShake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+.opt.correct{animation:correctPop .4s ease;}
+.opt.wrong{animation:wrongShake .4s ease;}
+
+/* CONFETTI */
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;pointer-events:none;z-index:9999;animation:confettiFall 1s ease-in forwards;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+
+/* FEEDBACK TOAST */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:10px 20px;font-size:.85rem;font-weight:700;z-index:600;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.correct-toast{border-color:#38d9a9;color:#38d9a9;}
+.toast.wrong-toast{border-color:#ff6b6b;color:#ff6b6b;}
+
+/* EXPLANATION */
+.explanation{margin-top:14px;padding:13px 16px;background:rgba(123,110,246,.08);border:1px solid rgba(123,110,246,.2);border-radius:11px;font-size:.82rem;color:var(--text2);line-height:1.6;display:none;}
+.explanation.show{display:block;animation:fadeIn .3s ease;}
+.exp-title{font-weight:700;color:var(--accent);margin-bottom:4px;font-size:.78rem;}
+
+/* NAV BUTTONS */
+.qnav{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+.qnav-btn{padding:11px 24px;border-radius:12px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.qnav-btn:hover{background:var(--surface2);}
+.qnav-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.qnav-btn.primary:hover{background:#6a5fe0;}
+.qnav-btn:disabled{opacity:.4;cursor:not-allowed;}
+.skip-btn{padding:8px 16px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:.76rem;cursor:pointer;font-family:inherit;transition:all .2s;}
+.skip-btn:hover{color:var(--text2);}
+
+/* QUESTION MAP */
+.qmap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px;}
+.qmap-dot{width:28px;height:28px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);font-size:.65rem;font-weight:700;color:var(--text3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+.qmap-dot:hover{background:var(--surface3);}
+.qmap-dot.current{background:var(--accent);color:#fff;border-color:var(--accent);}
+.qmap-dot.answered-c{background:rgba(56,217,169,.2);border-color:#38d9a9;color:#38d9a9;}
+.qmap-dot.answered-w{background:rgba(255,107,107,.2);border-color:#ff6b6b;color:#ff6b6b;}
+.qmap-dot.skipped{background:rgba(255,169,77,.15);border-color:#ffa94d;color:#ffa94d;}
+
+/* RESULT SCREEN */
+.result-screen{display:none;text-align:center;padding:40px 20px;}
+.result-screen.active{display:block;animation:fadeIn .5s ease;}
+.rs-circle{width:160px;height:160px;border-radius:50%;margin:0 auto 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+.rs-circle svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.rs-bg{fill:none;stroke:var(--surface2);stroke-width:10;}
+.rs-fill{fill:none;stroke-width:10;stroke-linecap:round;stroke-dasharray:440;stroke-dashoffset:440;transition:stroke-dashoffset 1.5s ease;}
+.rs-pct{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:700;line-height:1;}
+.rs-label{font-size:.68rem;color:var(--text2);margin-top:3px;}
+.rs-grade{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;margin-bottom:8px;}
+.rs-msg{color:var(--text2);font-size:.9rem;margin-bottom:28px;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.6;}
+.rs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;max-width:500px;margin-left:auto;margin-right:auto;}
+.rs-stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;}
+.rs-stat-num{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;margin-bottom:4px;}
+.rs-stat-lbl{font-size:.7rem;color:var(--text2);}
+.rs-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.rs-btn{padding:11px 22px;border-radius:12px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;border:1px solid var(--border2);background:var(--surface);color:var(--text);}
+.rs-btn:hover{background:var(--surface2);}
+.rs-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* WEAK POINT */
+.wp-section{margin-top:28px;}
+.wp-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;margin-bottom:14px;text-align:left;}
+.wp-bars{display:flex;flex-direction:column;gap:10px;}
+.wp-bar-row{display:flex;align-items:center;gap:12px;}
+.wp-bar-lbl{font-size:.8rem;font-weight:600;min-width:120px;text-align:left;}
+.wp-bar-track{flex:1;height:10px;background:var(--surface2);border-radius:5px;overflow:hidden;}
+.wp-bar-fill{height:100%;border-radius:5px;transition:width 1s ease;}
+.wp-bar-pct{font-size:.76rem;font-weight:700;min-width:38px;text-align:right;}
+
+/* WEAK POINT TEST PAGE */
+.wpt-intro{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:22px;}
+.wpt-subject-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.wpt-subj{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;}
+.wpt-subj.selected{border-color:var(--accent);background:rgba(123,110,246,.1);}
+.wpt-subj:hover{border-color:var(--border2);}
+.wpt-subj-ico{font-size:1.8rem;margin-bottom:7px;}
+.wpt-subj-name{font-size:.82rem;font-weight:700;}
+.wpt-subj-score{font-size:.7rem;color:var(--text2);margin-top:3px;}
+.wpt-start{width:100%;padding:13px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.wpt-start:hover{background:#6a5fe0;}
+
+/* QUICK 10 */
+.q10-landing{text-align:center;padding:40px 20px;}
+.q10-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:1rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .25s;box-shadow:0 8px 24px rgba(123,110,246,.3);}
+.q10-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(123,110,246,.4);}
+
+/* AI Q&A */
+.ai-wrap{display:flex;flex-direction:column;height:calc(100vh - 180px);min-height:400px;}
+.ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:16px 16px 0 0;}
+.ai-msg{display:flex;gap:10px;align-items:flex-start;animation:fadeIn .3s ease;}
+.ai-msg.user{flex-direction:row-reverse;}
+.ai-avatar{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.ai-avatar.bot{background:rgba(123,110,246,.15);}
+.ai-avatar.user{background:rgba(56,217,169,.15);}
+.ai-bubble{max-width:78%;padding:11px 15px;border-radius:12px;font-size:.85rem;line-height:1.65;}
+.ai-bubble.bot{background:var(--surface2);border:1px solid var(--border);border-radius:12px 12px 12px 3px;}
+.ai-bubble.user{background:var(--accent);color:#fff;border-radius:12px 12px 3px 12px;}
+.ai-typing{display:flex;gap:4px;align-items:center;padding:4px 0;}
+.ai-typing span{width:7px;height:7px;border-radius:50%;background:var(--text3);animation:typingDot 1.2s infinite;}
+.ai-typing span:nth-child(2){animation-delay:.2s;}
+.ai-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typingDot{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+.ai-input-row{display:flex;gap:8px;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 16px 16px;padding:12px;}
+.ai-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;resize:none;height:44px;transition:border-color .2s;}
+.ai-input:focus{border-color:var(--border2);}
+.ai-send{width:44px;height:44px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-size:1.1rem;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.ai-send:hover{background:#6a5fe0;}
+.ai-send:disabled{opacity:.5;cursor:not-allowed;}
+.ai-suggestions{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.ai-sug{padding:6px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-size:.74rem;cursor:pointer;transition:all .2s;font-family:inherit;}
+.ai-sug:hover{background:var(--surface2);color:var(--text);}
+
+/* MOBILE RESPONSIVE for test */
+@media(max-width:768px){
+  .test-landing{grid-template-columns:1fr;}
+  .rs-stats{grid-template-columns:repeat(3,1fr);}
+  .wpt-subject-grid{grid-template-columns:1fr;}
+  .qmap-dot{width:24px;height:24px;font-size:.6rem;}
+  .qcard{padding:18px;}
+  .qtext{font-size:.92rem;}
+  .te-header{gap:8px;}
+}
+@media(max-width:480px){
+  .rs-stats{grid-template-columns:repeat(3,1fr);}
+  .rs-stat-num{font-size:1.3rem;}
+}
+
+</style>
+</head>
+<body>
+<div class="amb amb1"></div>
+<div class="amb amb2"></div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<nav>
+  <div class="logo"><div class="logo-dot"></div>Edaz<span>Club</span></div>
+  <div class="nav-center">
+    <button class="nav-btn" onclick="sp('home')">Ana Səhifə</button>
+    <button class="nav-btn" onclick="sp('formulas')">Düsturlar</button>
+    <button class="nav-btn" onclick="sp('glossary')">Terminlər</button>
+    <button class="nav-btn" onclick="sp('summaries')">Xülasələr</button>
+    <button class="nav-btn" onclick="sp('motivation')">Motivasiya</button>
+  </div>
+  <button class="hamburger" id="ham" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="sg"><div class="sg-label">Əsas</div>
+    <a class="si active" onclick="sp('home')"><span class="ico">🏠</span>Ana Səhifə</a>
+    <a class="si" onclick="sp('motivation')"><span class="ico">💪</span>Motivasiya</a>
+    <a class="si" onclick="sp('achievements')"><span class="ico">🏆</span>Nailiyyətlər<span class="sb">12</span></a>
+  </div>
+  <div class="sg"><div class="sg-label">Testlər</div>
+
+    <a class="si" onclick="sp('tests')"><span class="ico">📚</span>Test Kitabları</a>
+    <a class="si" onclick="sp('kecmis')"><span class="ico">📝</span>Keçmiş İmtahanlar</a>
+<a class="si" onclick="sp('blok')"><span class="ico">🎯</span>Blok Simulyasiya</a>
+    <a class="si" onclick="sp('quick10')"><span class="ico">⚡</span>Sürətli 10 Sual</a>
+    <a class="si" onclick="sp('weaktest')"><span class="ico">🔍</span>Zəif Nöqtə Testi</a>
+
+  </div>
+  <div class="sg"><div class="sg-label">Öyrən</div>
+    <a class="si" onclick="sp('summaries')"><span class="ico">✨</span>Qısa Xülasələr</a>
+    <a class="si" onclick="sp('formulas')"><span class="ico">🔢</span>Düsturlar & Qaydalar</a>
+    <a class="si" onclick="sp('glossary')"><span class="ico">📘</span>Terminlər Lüğəti</a>
+      </div>
+  <div class="sg"><div class="sg-label">Məşq & Plan</div>
+    <a class="si" onclick="sp('notes')"><span class="ico">✏️</span>Qeydlər</a>
+    <a class="si" onclick="sp('studyplan')"><span class="ico">📅</span>Oxuma Planı</a>
+    <a class="si" onclick="sp('routine')"><span class="ico">🌅</span>Günlük Rutin</a>
+    <a class="si" onclick="sp('pomodoro')"><span class="ico">⏸️</span>Pomodoro Taymer</a>
+     </div>
+  <div class="sg"><div class="sg-label">Digər</div>
+<main class="main" id="main">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="ph">
+    <div class="ptag">✦ 11-ci sinif üçün</div>
+    <h1 class="ptitle">Xoş gəldin,<br><em>imtahana hazırlaşaq!</em></h1>
+    <p class="psub">Testlər, dərslər, düsturlar, AI köməkçi — hər şey bir yerdə.</p>
+  </div>
+  <div class="cdw">
+    <div class="cdw-lbl">⏳ Qalan vaxt</div>
+    <div class="cdw-digits">
+      <div class="cdw-blk"><span class="cdw-num" id="cd-d">00</span><div class="cdw-unit">gün</div></div>
+      <div class="cdw-sep">:</div>
+      <div class="cdw-blk"><span class="cdw-num" id="cd-h">00</span><div class="cdw-unit">saat</div></div>
+      <div class="cdw-sep">:</div>
+      <div class="cdw-blk"><span class="cdw-num" id="cd-m">00</span><div class="cdw-unit">dəq</div></div>
+      <div class="cdw-sep">:</div>
+      <div class="cdw-blk"><span class="cdw-num" id="cd-s">00</span><div class="cdw-unit">san</div></div>
+    </div>
+    <div class="cdw-tabs">
+      <button class="cdw-tab active" onclick="setCT('b',this)">Buraxılış</button>
+      <button class="cdw-tab" onclick="setCT('bl',this)">Blok</button>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="sbox" style="--sc:#7b6ef6"><div class="snum">0</div><div class="slbl">Həll edilən test</div></div>
+    <div class="sbox" style="--sc:#38d9a9"><div class="snum">0%</div><div class="slbl">Orta nəticə</div></div>
+    <div class="sbox" style="--sc:#f0649a"><div class="snum">0🔥</div><div class="slbl">Gün seriyası</div></div>
+    <div class="sbox" style="--sc:#ffa94d"><div class="snum">3</div><div class="slbl">Badge qazanıldı</div></div>
+  </div>
+  <div class="hgrid">
+  <div class="hcard" style="--c:#7b6ef6;--ci:rgba(123,110,246,.12)" onclick="sp('ai')"><div class="hc-ico">🤖</div><div class="hc-title">AI Sual-Cavab</div><div class="hc-desc">İstənilən sualını ver, izahlı cavab al</div></div>
+    <div class="hcard" style="--c:#38d9a9;--ci:rgba(56,217,169,.12)" onclick="sp('tests')"><div class="hc-ico">📚</div><div class="hc-title">Test Kitabları</div><div class="hc-desc">Bütün fənlər üzrə testlər</div></div>
+    <div class="hcard" style="--c:#f0649a;--ci:rgba(240,100,154,.12)" onclick="sp('blok')"><div class="hc-ico">🎯</div><div class="hc-title">Blok Simulyasiya</div><div class="hc-desc">Real imtahan formatında sınaq</div></div>
+   <div class="hcard" style="--c:#ffa94d;--ci:rgba(255,169,77,.12)" onclick="sp('formulas')"><div class="hc-ico">🔢</div><div class="hc-title">Düsturlar</div><div class="hc-desc">Riyaziyyat, Fizika, Kimya</div></div>
+    <div class="hcard" style="--c:#38d9a9;--ci:rgba(56,217,169,.1)" onclick="sp('summaries')"><div class="hc-ico">✨</div><div class="hc-title">Qısa Xülasələr</div><div class="hc-desc">Hər mövzu bir səhifədə</div></div>
+    <div class="hcard" style="--c:#7b6ef6;--ci:rgba(123,110,246,.1)" onclick="sp('pomodoro')"><div class="hc-ico">⏱️</div><div class="hc-title">Pomodoro</div><div class="hc-desc">Effektiv oxu rejimi</div></div>
+    <div class="hcard" style="--c:#f0649a;--ci:rgba(240,100,154,.1)" onclick="sp('motivation')"><div class="hc-ico">💡</div><div class="hc-title">Motivasiya</div><div class="hc-desc">Enerji lazımdır? Buraya bax</div></div>
+    <div class="hcard" style="--c:#ffa94d;--ci:rgba(255,169,77,.1)" onclick="sp('notes')"><div class="hc-ico">✏️</div><div class="hc-title">Qeydlər</div><div class="hc-desc">Öz qeydlərini yaz və saxla</div></div>
+    <div class="hcard" style="--c:#38d9a9;--ci:rgba(56,217,169,.1)" onclick="sp('glossary')"><div class="hc-ico">📘</div><div class="hc-title">Terminlər</div><div class="hc-desc">Bütün fənn terminləri</div></div>
+  </div>
+</div>
+
+<!-- MOTIVATION -->
+<div class="page" id="page-motivation">
+  <div class="ph"><div class="ptag">💪 Motivasiya</div><h1 class="ptitle">Hər gün bir addım,<br><em>böyük nəticə.</em></h1></div>
+  <div class="mot-main" onclick="nextQ()">
+    <div class="mot-bg" id="mbg">💡</div>
+    <span class="mot-e" id="me">🔥</span>
+    <div class="mot-q" id="mq">Uğur şans deyil, hazırlığın fürsətlə görüşməsidir.</div>
+    <div class="mot-s" id="ms">Hər gün bir az daha çalış — nəticə mütləq gələcək.</div>
+    <div class="mot-tap">🔄 yenisini görmək üçün basın</div>
+  </div>
+  <div class="mot-grid">
+    <div class="mcard"><div class="mc-e">🧠</div><div class="mc-t">Beyin bir əzələdir. Nə qədər işlətsən, o qədər güclənər. Hər oxuduğun sual onu inkişaf etdirir.</div><div class="mc-a">— Nörobiologiya</div></div>
+    <div class="mcard"><div class="mc-e">⚡</div><div class="mc-t">İmtahan səni yoxlamır — sənin hazırlığını yoxlayır. Hazırlıq varsa, nəticə özü gəlir.</div><div class="mc-a">— Müvəffəqiyyət psixologiyası</div></div>
+    <div class="mcard"><div class="mc-e">🌱</div><div class="mc-t">Böyümək rahat olmur. Amma hər çətin sualın arxasında yeni bir bacarıq gizlənir.</div><div class="mc-a">— Carol Dweck</div></div>
+    <div class="mcard"><div class="mc-e">🎯</div><div class="mc-t">Kiçik hədəflər qoy, hər gün qazanışı hiss et. Beyin qazanmağı sevirsə, daha çox çalışır.</div><div class="mc-a">— Davranış elmi</div></div>
+    <div class="mcard"><div class="mc-e">🚀</div><div class="mc-t">Rəqibin başqaları deyil — dünənki sənin. Hər gün dünəndən bir az daha yaxşı ol.</div><div class="mc-a">— James Clear</div></div>
+    <div class="mcard"><div class="mc-e">💎</div><div class="mc-t">Elmas da təzyiq altında formalaşır. Çətin anlarda möhkəm dur — bu sənin ən güclü anındır.</div><div class="mc-a">— Fəlsəfə</div></div>
+  </div>
+</div>
+
+<!-- NOTES -->
+<div class="page" id="page-notes">
+  <div class="ph"><div class="ptag">✏️ Qeydlər</div><h1 class="ptitle">Öz qeydlərini<br><em>bura yaz.</em></h1></div>
+  <div class="notes-toolbar">
+    <button class="tbtn" onclick="clearN()" style="color:#ff6b6b">🗑️ Sil</button>
+    <button class="tbtn" onclick="copyN()">📋 Kopyala</button>
+    <button class="tbtn" onclick="dlN()">⬇️ Yüklə (.txt)</button>
+    <span style="margin-left:auto;font-size:.75rem;color:var(--text3)" id="ncc">0 hərf</span>
+  </div>
+  <textarea class="narea" id="narea" placeholder="Buraya qeydlərini yaz...&#10;&#10;Nümunə:&#10;• Riyaziyyat: D = b² - 4ac (diskriminant)&#10;• Fizika: F = ma (Nyuton 2-ci qanun)&#10;• Kimya: n = m/M (mol hesabı)&#10;• Biologiya: Mitoz — 4 mərhələ: profaza, metafaza, anafaza, telofaza" oninput="onNI()"></textarea>
+  <div class="nsaved" id="nsaved">✓ Saxlanıldı</div>
+</div>
+
+<!-- POMODORO -->
+<div class="page" id="page-pomodoro">
+  <div class="ph"><div class="ptag">⏸️ Pomodoro Taymer</div><h1 class="ptitle">Düzgün fasilə,<br><em>daha güclü oxu.</em></h1><p class="psub">Vaxt müddətini özün ayarla. Oxu, fasilə ver, təkrarla.</p></div>
+  <div class="pomo-center">
+    <div class="pomo-ring">
+      <svg viewBox="0 0 200 200" width="220" height="220">
+        <circle class="pc-bg" cx="100" cy="100" r="90"/>
+        <circle class="pc-prog" id="pprog" cx="100" cy="100" r="90"/>
+      </svg>
+      <div class="ptime"><div class="pnum" id="pdisplay">25:00</div><div class="pmode" id="pmlbl">OXUMA</div></div>
+    </div>
+    <div class="pctrl">
+      <button class="pbtn" onclick="resetP()">↺ Sıfırla</button>
+      <button class="pbtn start" id="psbtn" onclick="toggleP()">▶ Başla</button>
+      <button class="pbtn" onclick="skipP()">⏭ Keç</button>
+    </div>
+    <div class="psets">
+      <div class="pset active" id="ps-work" onclick="setPM('work')">
+        <input class="pset-input" id="pi-work" value="25" type="number" min="1" max="120" onchange="updatePDur('work')" onclick="event.stopPropagation()"/>
+        <div class="pset-lbl">dəq — Oxuma</div>
+      </div>
+      <div class="pset" id="ps-short" onclick="setPM('short')">
+        <input class="pset-input" id="pi-short" value="5" type="number" min="1" max="60" onchange="updatePDur('short')" onclick="event.stopPropagation()"/>
+        <div class="pset-lbl">dəq — Qısa fasilə</div>
+      </div>
+      <div class="pset" id="ps-long" onclick="setPM('long')">
+        <input class="pset-input" id="pi-long" value="15" type="number" min="1" max="60" onchange="updatePDur('long')" onclick="event.stopPropagation()"/>
+        <div class="pset-lbl">dəq — Uzun fasilə</div>
+      </div>
+    </div>
+    <div><div class="phist-title">Bu günün sessiyaları</div><div class="psessions" id="psess"></div></div>
+  </div>
+</div>
+
+<!-- STUDY PLAN -->
+<div class="page" id="page-studyplan">
+  <div class="ph"><div class="ptag">📅 Oxuma Planı</div><h1 class="ptitle">Hər günə<br><em>öz planın.</em></h1><p class="psub">Tapşırıqları özün əlavə et və tamamladıqca qeyd et.</p></div>
+  <div class="plan-hdr">
+    <button class="plan-nav" onclick="chW(-1)">← Əvvəl</button>
+    <div class="plan-week" id="pwt">Bu həftə</div>
+    <button class="plan-nav" onclick="chW(1)">Sonra →</button>
+  </div>
+  <div class="pgrid" id="pgrid"></div>
+</div>
+
+<!-- ROUTINE -->
+<div class="page" id="page-routine">
+  <div class="ph"><div class="ptag">🌅 Günlük Rutin</div><h1 class="ptitle">İdeal oxu<br><em>günün.</em></h1><p class="psub">İmtahana hazırlıq üçün tövsiyə olunan günlük rutin. Tamamladıqlarını qeyd et.</p></div>
+  <div class="rtl" id="rtl"></div>
+</div>
+
+<!-- ACHIEVEMENTS -->
+<div class="page" id="page-achievements">
+  <div class="ph"><div class="ptag">🏆 Nailiyyətlər</div><h1 class="ptitle">Qazandıqların<br><em>sənin tarihindir.</em></h1></div>
+  <div class="bgrid" id="bgrid"></div>
+</div>
+
+<!-- KEÇMİŞ İMTAHANLAR -->
+<div class="page" id="page-kecmis">
+  <div class="ph">
+    <div class="ptag">📝 Keçmiş İmtahanlar</div>
+    <h1 class="ptitle">Real imtahan<br><em>sualları.</em></h1>
+    <p class="psub">DİM-in keçmiş illər buraxılış imtahanlarından seçilmiş suallar. 11-ci sinif proqramına uyğundur.</p>
+  </div>
+  <div class="tabs" id="kecmis-tabs"></div>
+  <div id="kecmis-content"></div>
+</div>
+
+<!-- BLOK SİMULYASİYA -->
+<div class="page" id="page-blok">
+  <div class="ph">
+    <div class="ptag">🎯 Blok Simulyasiya</div>
+    <h1 class="ptitle">Real imtahan<br><em>formatında sınaq.</em></h1>
+    <p class="psub">Buraxılış imtahanının blok formatı: Azərbaycan dili (60 sual), Riyaziyyat (40 sual), İngilis dili (40 sual). Vaxt: 3 saat.</p>
+  </div>
+  <div id="blok-landing">
+    <div class="stats-row" style="margin-bottom:22px">
+      <div class="sbox" style="--sc:#38d9a9"><div class="snum">60</div><div class="slbl">AZ dili sualı</div></div>
+      <div class="sbox" style="--sc:#7b6ef6"><div class="snum">40</div><div class="slbl">Riyaziyyat sualı</div></div>
+      <div class="sbox" style="--sc:#ffa94d"><div class="snum">40</div><div class="slbl">İngilis dili sualı</div></div>
+      <div class="sbox" style="--sc:#f0649a"><div class="snum">180</div><div class="slbl">dəqiqə vaxt</div></div>
+    </div>
+    <div class="scard" style="margin-bottom:16px">
+      <div class="sc-title">📋 İmtahan qaydaları</div>
+      <div class="spoints">
+        <div class="spoint"><div class="spnum">1</div><div class="sptext"><strong>Vaxt:</strong> 180 dəqiqə (3 saat). Hər sualı orta 40 saniyəyə cavablandır.</div></div>
+        <div class="spoint"><div class="spnum">2</div><div class="sptext"><strong>Keç düyməsi:</strong> Bilmədiyini keç, sonra qayıt. Vaxtı effektiv istifadə et.</div></div>
+        <div class="spoint"><div class="spnum">3</div><div class="sptext"><strong>Düzgün cavab:</strong> Hər düzgün cavab 1 bal. Yanlış cavab bal çıxmaz.</div></div>
+        <div class="spoint"><div class="spnum">4</div><div class="sptext"><strong>Nəticə:</strong> Blok bitdikdə mövzu üzrə ətraflı analiz görəcəksən.</div></div>
+      </div>
+    </div>
+    <div style="text-align:center;padding:20px 0">
+      <button onclick="startBlokSimulyasiya()" style="padding:14px 40px;border-radius:14px;background:linear-gradient(135deg,#7b6ef6,#f0649a);color:#fff;font-size:1rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px rgba(123,110,246,.3)">🎯 Blok İmtahanını Başla</button>
+    </div>
+  </div>
+  <div class="test-engine" id="blok-engine" style="display:none">
+    <div class="te-header">
+      <button class="te-back" onclick="backBlok()">← Geri</button>
+      <div class="te-subj" id="blok-subj-lbl">🎯 Blok İmtahan</div>
+      <div class="te-progress-wrap">
+        <div class="te-prog-lbl"><span id="blok-curr">1</span>/<span id="blok-total">140</span></div>
+        <div class="te-prog-bar"><div class="te-prog-fill" id="blok-prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="te-timer" id="blok-timer">⏱ 180:00</div>
+    </div>
+    <div class="qmap" id="blok-qmap" style="max-height:120px;overflow-y:auto"></div>
+    <div id="blok-card-wrap"></div>
+    <div class="qnav">
+      <button class="qnav-btn" id="blok-prev-btn" onclick="prevBlok()">← Əvvəlki</button>
+      <button class="skip-btn" onclick="skipBlok()">Keç →</button>
+      <button class="qnav-btn primary" id="blok-next-btn" onclick="nextBlok()">Növbəti →</button>
+    </div>
+  </div>
+  <div class="result-screen" id="blok-result">
+    <div class="rs-circle">
+      <svg viewBox="0 0 150 150" width="160" height="160">
+        <circle class="rs-bg" cx="75" cy="75" r="70"/>
+        <circle class="rs-fill" id="blok-rs-fill" cx="75" cy="75" r="70"/>
+      </svg>
+      <div class="rs-pct" id="blok-rs-pct">0%</div>
+      <div class="rs-label">nəticə</div>
+    </div>
+    <div class="rs-grade" id="blok-grade">—</div>
+    <div class="rs-msg" id="blok-msg"></div>
+    <div class="rs-stats">
+      <div class="rs-stat"><div class="rs-stat-num" id="blok-correct-num" style="color:#38d9a9">0</div><div class="rs-stat-lbl">✓ Düzgün</div></div>
+      <div class="rs-stat"><div class="rs-stat-num" id="blok-wrong-num" style="color:#ff6b6b">0</div><div class="rs-stat-lbl">✗ Səhv</div></div>
+      <div class="rs-stat"><div class="rs-stat-num" id="blok-skip-num" style="color:#ffa94d">0</div><div class="rs-stat-lbl">→ Keçilmiş</div></div>
+    </div>
+    <div class="wp-section">
+      <div class="wp-title">📊 Fənn üzrə nəticə</div>
+      <div class="wp-bars" id="blok-subj-bars"></div>
+    </div>
+    <div class="rs-actions" style="margin-top:24px">
+      <button class="rs-btn" onclick="backBlok()">← Geri</button>
+      <button class="rs-btn primary" onclick="startBlokSimulyasiya()">↺ Yenidən</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMING SOON -->
+<div class="page" id="page-coming">
+  <div class="coming"><div style="font-size:3.5rem">🚧</div><h2>Hazırlanır...</h2><p>Bu bölüm tezliklə açılacaq. Digər bölümlərdən istifadə edə bilərsiniz.</p><button class="cbtn" onclick="sp('home')">← Ana Səhifəyə Qayıt</button></div>
+</div>
+
+<!-- FORMULAS — rendered by JS -->
+<div class="page" id="page-formulas">
+  <div class="ph"><div class="ptag">🔢 Düsturlar & Qaydalar</div><h1 class="ptitle">Bütün düsturlar<br><em>bir yerdə.</em></h1></div>
+  <div class="tabs" id="ftabs"></div>
+  <div id="fpanels"></div>
+</div>
+
+<!-- GLOSSARY — rendered by JS -->
+<div class="page" id="page-glossary">
+  <div class="ph"><div class="ptag">📘 Terminlər Lüğəti</div><h1 class="ptitle">Bütün terminlər,<br><em>asan izahı ilə.</em></h1></div>
+  <div class="sbox-input"><span>🔍</span><input type="text" id="gsearch" placeholder="Termin axtar..." oninput="renderG()"/></div>
+  <div class="tabs" id="gtabs"></div>
+  <div class="glist" id="glist"></div>
+</div>
+
+<!-- SUMMARIES — rendered by JS -->
+<div class="page" id="page-summaries">
+  <div class="ph"><div class="ptag">✨ Qısa Xülasələr</div><h1 class="ptitle">Mövzular,<br><em>sadə dildə.</em></h1></div>
+  <div class="tabs" id="stabs"></div>
+  <div id="scontent"></div>
+</div>
+
+<!-- TEST KİTABLARI PAGE -->
+<div class="page" id="page-tests">
+  <div class="ph">
+    <div class="ptag">📚 Test Kitabları</div>
+    <h1 class="ptitle">Özünü <em>sına!</em></h1>
+    <p class="psub">3 fənn, 900+ sual. Hər sualın izahlı cavabı var.</p>
+  </div>
+  <div id="test-landing-view">
+    <div class="test-landing">
+      <div class="tl-card az" onclick="startTest('az')">
+        <span class="tl-ico">🇦🇿</span>
+        <div class="tl-name">Azərbaycan dili</div>
+        <div class="tl-count">300 sual • Morfologiya, sintaksis, orfoqrafiya</div>        <button class="tl-btn" style="background:#38d9a9">▶ Başla</button>
+      </div>
+      <div class="tl-card math" onclick="startTest('math')">
+        <span class="tl-ico">📐</span>
+        <div class="tl-name">Riyaziyyat</div>
+        <div class="tl-count">300 sual • Cəbr, həndəsə, triqonometriya</div>        <button class="tl-btn" style="background:#7b6ef6">▶ Başla</button>
+      </div>
+      <div class="tl-card en" onclick="startTest('en')">
+        <span class="tl-ico">🇬🇧</span>
+        <div class="tl-name">İngilis dili</div>
+        <div class="tl-count">300 sual • Grammar, vocabulary, reading</div>
+        <button class="tl-btn" style="background:#ffa94d">▶ Başla</button>
+      </div>
+    </div>
+  </div>
+  <div class="test-engine" id="test-engine-view">
+    <div class="te-header">
+      <button class="te-back" onclick="backToTestLanding()">← Geri</button>
+      <div class="te-subj" id="te-subj-name"></div>
+      <div class="te-progress-wrap">
+        <div class="te-prog-lbl"><span id="te-curr">1</span>/<span id="te-total">10</span></div>
+        <div class="te-prog-bar"><div class="te-prog-fill" id="te-prog-fill" style="width:0%"></div></div>
       </div>
       <div class="te-timer" id="te-timer">⏱ 00:00</div>
     </div>
     <div class="qmap" id="qmap"></div>
     <div id="qcard-wrap"></div>
+    <div class="qnav">
+      <button class="qnav-btn" id="btn-prev" onclick="prevQ()">← Əvvəlki</button>
+      <button class="skip-btn" onclick="skipQ()">Keç →</button>
+      <button class="qnav-btn primary" id="btn-next" onclick="nextQ_test()">Növbəti →</button>
+    </div>
+  </div>
+  <div class="result-screen" id="result-screen">
+    <div class="rs-circle">
+      <svg viewBox="0 0 150 150" width="160" height="160">
+        <circle class="rs-bg" cx="75" cy="75" r="70"/>
+        <circle class="rs-fill" id="rs-fill-circle" cx="75" cy="75" r="70"/>
+      </svg>
+      <div class="rs-pct" id="rs-pct">0%</div>
+      <div class="rs-label">nəticə</div>
+    </div>
+    <div class="rs-grade" id="rs-grade">—</div>
+    <div class="rs-msg" id="rs-msg"></div>
+    <div class="rs-stats">
+      <div class="rs-stat"><div class="rs-stat-num" id="rs-correct" style="color:#38d9a9">0</div><div class="rs-stat-lbl">✓ Düzgün</div></div>
+      <div class="rs-stat"><div class="rs-stat-num" id="rs-wrong" style="color:#ff6b6b">0</div><div class="rs-stat-lbl">✗ Səhv</div></div>
+      <div class="rs-stat"><div class="rs-stat-num" id="rs-skipped" style="color:#ffa94d">0</div><div class="rs-stat-lbl">→ Keçilmiş</div></div>
+    </div>
+    <div class="wp-section">
+      <div class="wp-title">📊 Mövzu üzrə nəticə</div>
+      <div class="wp-bars" id="rs-topic-bars"></div>
+    </div>
+    <div class="rs-actions" style="margin-top:24px">
+      <button class="rs-btn" onclick="backToTestLanding()">← Geri</button>
+      <button class="rs-btn primary" onclick="restartTest()">↺ Yenidən</button>
+      <button class="rs-btn" onclick="sp('weaktest')">🎯 Zəif nöqtə testi</button>
+    </div>
+  </div>
+</div>
 
+<!-- SÜRƏTLI 10 SUAL PAGE -->
+<div class="page" id="page-quick10">
+  <div class="ph">
+    <div class="ptag">⚡ Sürətli 10 Sual</div>
+    <h1 class="ptitle">10 sual, <em>3 fənndən!</em></h1>
+    <p class="psub">Qarışıq suallar — sürətli yoxla özünü.</p>
+  </div>
+  <div id="q10-landing-view" class="q10-landing">
+    <div style="font-size:4rem;margin-bottom:20px">⚡</div>
+    <p style="color:var(--text2);margin-bottom:28px;max-width:340px;margin-left:auto;margin-right:auto;line-height:1.65">Azərbaycan dili, Riyaziyyat və İngilis dilindən 10 sual. 30 saniyə vaxtın var hər sual üçün!</p>
+    <button class="q10-btn" onclick="startQuick10()">⚡ Başla!</button>
+  </div>
+  <div class="test-engine" id="q10-engine-view">
+    <div class="te-header">
+      <button class="te-back" onclick="backQ10()">← Geri</button>
+      <div class="te-subj" id="q10-subj-lbl"></div>
+      <div class="te-progress-wrap">
+        <div class="te-prog-lbl"><span id="q10-curr">1</span>/10</div>
+        <div class="te-prog-bar"><div class="te-prog-fill" id="q10-prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="te-timer" id="q10-timer">⏱ 30</div>
+    </div>
+    <div id="q10-card-wrap"></div>
+    <div class="qnav">
+      <div></div>
+      <button class="qnav-btn primary" id="q10-next-btn" onclick="nextQ10()" disabled>Növbəti →</button>
+    </div>
+  </div>
+  <div class="result-screen" id="q10-result">
+    <div class="rs-circle">
+      <svg viewBox="0 0 150 150" width="160" height="160">
+        <circle class="rs-bg" cx="75" cy="75" r="70"/>
+        <circle class="rs-fill" id="q10-rs-fill" cx="75" cy="75" r="70"/>
+      </svg>
+      <div class="rs-pct" id="q10-rs-pct">0%</div>
+      <div class="rs-label">nəticə</div>
+    </div>
+    <div class="rs-grade" id="q10-grade">—</div>
+    <div class="rs-msg" id="q10-msg"></div>
+    <div class="rs-stats">
+      <div class="rs-stat"><div class="rs-stat-num" id="q10-correct" style="color:#38d9a9">0</div><div class="rs-stat-lbl">✓ Düzgün</div></div>
+      <div class="rs-stat"><div class="rs-stat-num" id="q10-wrong" style="color:#ff6b6b">0</div><div class="rs-stat-lbl">✗ Səhv</div></div>
+      <div class="rs-stat"><div class="rs-stat-num" id="q10-time-stat" style="color:#ffa94d">0s</div><div class="rs-stat-lbl">⏱ Vaxt</div></div>
+    </div>
+    <div class="rs-actions" style="margin-top:24px">
+      <button class="rs-btn" onclick="backQ10()">← Geri</button>
+      <button class="rs-btn primary" onclick="startQuick10()">↺ Yenidən</button>
+    </div>
+  </div>
+</div>
+
+<!-- ZƏİF NÖQTƏ TESTİ PAGE -->
+<div class="page" id="page-weaktest">
+  <div class="ph">
+    <div class="ptag">🎯 Zəif Nöqtə Testi</div>
+    <h1 class="ptitle">Zəif yerini tap,<br><em>gücləndir!</em></h1>
+    <p class="psub">Nəticənə görə ən zəif mövzunu tapıb sənə xüsusi test verir.</p>
+  </div>
   <div id="wpt-intro-view">
     <div class="wpt-intro">
       <p style="color:var(--text2);margin-bottom:20px;line-height:1.65">Fənn seç, test ver — sistem sənin hansı mövzuda zəif olduğunu tapacaq və o mövzudan daha çox sual verəcək.</p>
@@ -70,6 +964,30 @@ og-bar"><div class="te-prog-fill" id="te-prog-fill" style="width:0%"></div></div
   </div>
 </div>
 
+    <h1 class="ptitle">Hər sualın<br><em>cavabı var.</em></h1>
+    <p class="psub">İmtahana aid istənilən sualını ver — izahlı cavab al.</p>
+  </div>
+  <div class="ai-suggestions">
+    <button class="ai-sug" onclick="aiSuggest(this)">Mitoz nədir?</button>
+    <button class="ai-sug" onclick="aiSuggest(this)">log₂8 necə hesablanır?</button>
+    <button class="ai-sug" onclick="aiSuggest(this)">Present Perfect nə vaxt işlənir?</button>
+    <button class="ai-sug" onclick="aiSuggest(this)">Diskriminant düsturu</button>
+    <button class="ai-sug" onclick="aiSuggest(this)">Osmanlı dövlətinin süqutu</button>
+    <button class="ai-sug" onclick="aiSuggest(this)">Fotosintez mərhələləri</button>
+  </div>
+  <div class="ai-wrap">
+    <div class="ai-messages" id="ai-messages">
+      <div class="ai-msg">
+        <div class="ai-avatar bot">🤖</div>
+        <div class="ai-bubble bot">Salam! Mən Edaz Club AI köməkçisiyəm. İmtahana aid istənilən sualını ver — Azərbaycan dilində izahlı cavab verəcəyəm. 📚</div>
+      </div>
+    </div>
+    <div class="ai-input-row">
+      <textarea class="ai-input" id="ai-input" placeholder="Sualını yaz..." onkeydown="aiKeyDown(event)" rows="1"></textarea>
+      <button class="ai-send" id="ai-send-btn" onclick="sendAI()">➤</button>
+    </div>
+  </div>
+</div>
 
 </main>
 </div>
@@ -651,11 +1569,11 @@ const glossaryData=[
   {term:'Renessans',s:'hist',sl:'Tarix',def:'XIV-XVII əsrlərdə İtaliyadan başlayan mədəni-intellektual yüksəliş. Antik irsin yenidən kəşfi, humanizm, insan mərkəzli düşüncə. Məşhurlar: Da Vinci, Mikelancelo, Raffaello.'},
   {term:'Reformasiya',s:'hist',sl:'Tarix',def:'XVI əsrdə Avropada Katolik kilsəsinə qarşı hərəkat. Martin Lüter (1517, 95 tezis) başlatdı. Protestantlıq meydana çıxdı. Din müharibələri baş verdi.'},
   {term:'İnqilab',s:'hist',sl:'Tarix',def:'Cəmiyyətin siyasi, iqtisadi, sosial quruluşunda köklü dəyişiklik. Fransız inqilabı (1789): azadlıq, bərabərlik, qardaşlıq. Rusiya inqilabı (1917): bolşeviklər.'},
-  {term:'Soyuq müharibə',s:'hist',sl:'Tarix',def:'1947-1991. ABŞ (ktalizm) ilə SSRİ (sosializm) arasında hərbi-siyasi-ideoloji qarşıdurma. NATO vs. Varşava Pakti. Kubа raketi böhranı (1962). Berlin divari (1961-1989).'},
+  {term:'Soyuq müharibə',s:'hist',sl:'Tarix',def:'1947-1991. ABŞ (kapitalizm) ilə SSRİ (sosializm) arasında hərbi-siyasi-ideoloji qarşıdurma. NATO vs. Varşava Pakti. Kubа raketi böhranı (1962). Berlin divari (1961-1989).'},
   {term:'Osmanlı dövləti',s:'hist',sl:'Tarix',def:'1299-1922. Osman bəy tərəfindən quruldu. 1453 Konstantinopol (İstanbul) fəth edildi. Qanuni Sultan Süleyman dövründə zirvəyə çatdı. I Dünya Müharibəsindən sonra süquta uğradı.'},
   {term:'Xilafət',s:'hist',sl:'Tarix',def:'İslam dünyasının siyasi-dini liderinin (xəlifənin) idarə etdiyi dövlət forması. Raşidi xəlifələr (632-661), Əməvi (661-750), Abbasi (750-1258) xilafətləri.'},
   {term:'Renessans humanizmi',s:'hist',sl:'Tarix',def:'İnsanı mərkəzə alan düşüncə tərzi. Antik Yunan-Roma mədəniyyətinin yenidən kəşfi. Kilsənin dogmalarına qarşı çıxış. Erasmus, Tomas Mor nümayəndələr.'},
-  {term:'Sənaye inqilabı',s:'hist',sl:'Tarix',def:'XVIII-XIX əsrdə Britaniyadan başlayan texnoloji dəyişim. Buxar mühərriki (Watt), fabrik sistemi, dəmir yolları. Ktalizmin inkişafı, işçi sinifinin (proletariat) meydana çıxması.'},
+  {term:'Sənaye inqilabı',s:'hist',sl:'Tarix',def:'XVIII-XIX əsrdə Britaniyadan başlayan texnoloji dəyişim. Buxar mühərriki (Watt), fabrik sistemi, dəmir yolları. Kapitalizmin inkişafı, işçi sinifinin (proletariat) meydana çıxması.'},
   // COĞRAFİYA
   {term:'Litosfer',s:'geo',sl:'Coğrafiya',def:'Yerin bərk xarici qatı. Qabıq (5-70 km) + mantiyənin yuxarı hissəsi. Litosfer lövhələrə bölünür. Lövhələrin hərəkəti: zəlzələ, vulkan, dağəmələgəlmə.'},
   {term:'Antisiklon',s:'geo',sl:'Coğrafiya',def:'Mərkəzindən kənara doğru hava axımı olan yüksək təzyiq sahəsi. Şimal yarımkürəsində saat əqrəbi istiqamətində fırlanır. Aydın, sakit, quru hava.'},
@@ -714,7 +1632,7 @@ function renderG(){
     <div class="gitem">
       <div class="gterm">${g.term}<span class="gtag">${g.sl}</span></div>
       <div class="gdef">${g.def}</div>
-    </div>`).join(''):'<div style="color:var(--text3);padding:20px;text-align:center">Heç bir nəticə tlmadı</div>';
+    </div>`).join(''):'<div style="color:var(--text3);padding:20px;text-align:center">Heç bir nəticə tapılmadı</div>';
 }
 
 // ===== SUMMARIES DATA =====
@@ -771,7 +1689,7 @@ const summaryData={
   ]},
   physics:{label:'⚛️ Fizika',topics:[
     {title:'Mexanika — Qısa Xülasə',tag:'Fizika',pts:[
-      {t:'Kinematika əsasları',d:'Sürət: v=s/t. Sürətlənmə: a=(v-v₀)/t. Yol: s=v₀t+at²/2. Sürətin kvadratı: v²=v₀²+2as. 4 düstur — 3-ü bilinəndə 4-cü tlır.'},
+      {t:'Kinematika əsasları',d:'Sürət: v=s/t. Sürətlənmə: a=(v-v₀)/t. Yol: s=v₀t+at²/2. Sürətin kvadratı: v²=v₀²+2as. 4 düstur — 3-ü bilinəndə 4-cü tapılır.'},
       {t:'Nyuton qanunları — xülasə',d:'1: qüvvə yoxdursa v=sabit. 2: F=ma (əsas qanun). 3: hər fəaliyyətə bərabər əks-fəaliyyət var.'},
       {t:'Enerjinin saxlanması',d:'E_k + E_p = sabit (sürtünmə olmadıqda). E_k=mv²/2, E_p=mgh. Sürtünmə varsa: mexaniki enerji azalır (isti enerjiyə çevrilir).'},
       {t:'İmpulsun saxlanması',d:'Xarici qüvvə olmayan qapalı sistemdə: Σm·v = sabit. Toqquşma məsələlərinin əsası.'},
@@ -1045,7 +1963,7 @@ const questionsAZ = [
 {q:"\"Oxumuşdum\" felinin zamanı hansıdır?",o:["İndiki","Qeyri-müəyyən keçmiş","Uzaq keçmiş","Gələcək"],a:2,t:"Qrammatika",e:"oxumuşdum — uzaq keçmiş (hekayəti keçmiş zaman). -muş + -du + -m."},
 {q:"Hansı söz sonu kar samitlə bitir?",o:["ev","kitab","bağ","top"],a:3,t:"Fonetika",e:"top — p kar samitlə bitir. ev(v), kitab(b), bağ(ğ) — cingiltili samitlə bitir."},
 {q:"\"Gözəlləşmək\" sözündə neçə morfem var?",o:["3","4","5","2"],a:1,t:"Morfologiya",e:"gözəl(kök)+ləş(fel düzəldici)+mək(məsdər şəkilçisi) = 3 morfem... Əslində 3 morfem. Cavab: A."},
-{q:"İsmin yiyəlik halının şəkilçisi hansıdır?",o:["-da/-də","-dan/-dən","-ın/-in/-un/-ün","-a/-ə"],a:2,t:"Qrammatika",e:"Yiyəlik hal: -ın/-in/-un/-ün (kimin? nəyin?): kitabın, evin, qnın."},
+{q:"İsmin yiyəlik halının şəkilçisi hansıdır?",o:["-da/-də","-dan/-dən","-ın/-in/-un/-ün","-a/-ə"],a:2,t:"Qrammatika",e:"Yiyəlik hal: -ın/-in/-un/-ün (kimin? nəyin?): kitabın, evin, qapının."},
 {q:"Hansı söz köməkçi nitq hissəsidir?",o:["isim","fel","bağlayıcı","sifət"],a:2,t:"Qrammatika",e:"Bağlayıcı — köməkçi nitq hissəsi. Müstəqil leksik mənası yoxdur."},
 {q:"\"Qardaş\" sözünün cəmi hansıdır?",o:["qardaşlar","qardaşlər","qardaşılar","qardaşları"],a:0,t:"Qrammatika",e:"qardaşlar — qalın sait (a) olduğuna görə -lar cəm şəkilçisi artırılır."},
 {q:"Hansı cümlə nida cümləsidir?",o:["Sən haradasan?","Hava istidir.","Nə gözəl gündür!","Gəl buraya."],a:2,t:"Sintaksis",e:"\"Nə gözəl gündür!\" — nida cümləsi. Hiss-həyəcan bildirir, nida işarəsi var."},
@@ -1115,7 +2033,7 @@ const questionsAZ = [
 {q:"Hansı cümlə əmr cümləsidir?",o:["O, gəldi.","Sən haradan gəldin?","Gəl buraya!","Hava istidir."],a:2,t:"Sintaksis",e:"\"Gəl buraya!\" — əmr cümləsi. Nida işarəsi var, əmr şəklindədir."},
 {q:"\"İki\" sayı hansı növ saydır?",o:["Sıra","Miqdar","Kəsr","Qeyri-müəyyən"],a:1,t:"Morfologiya",e:"iki — miqdar sayı (neçə? sualı)."},
 {q:"\"İkinci\" sayı hansı növ saydır?",o:["Miqdar","Sıra","Kəsr","Bölüşdürmə"],a:1,t:"Morfologiya",e:"ikinci — sıra sayı (neçənci? sualı). Şəkilçi: -ıncı/-inci."},
-{q:"Hansı sözdə samit assimilyasiyası var?",o:["kitab","q","versə","oxudu"],a:2,t:"Fonetika",e:"versə = ver+sə (şərt şəkilçisi). v+s birləşməsindəki fonetik hadisə."},
+{q:"Hansı sözdə samit assimilyasiyası var?",o:["kitab","qapı","versə","oxudu"],a:2,t:"Fonetika",e:"versə = ver+sə (şərt şəkilçisi). v+s birləşməsindəki fonetik hadisə."},
 {q:"\"Cavanlıq\" sözündəki şəkilçilər hansılardır?",o:["-lıq","-an,-lıq","-van,-lıq","-avan,-lıq"],a:0,t:"Morfologiya",e:"cavan(kök) + -lıq(şəkilçi). Bir sözdüzəldici şəkilçi."},
 {q:"Hansı cümləni tabesiz mürəkkəb cümlə kimi tanımaq olar?",o:["O gəldi ki, xəbər versin.","Hava gözəl idi, biz gəzə bildik.","Əgər gəlsə, görərik.","Bilirəm ki, haqlıdır."],a:1,t:"Sintaksis",e:"\"Hava gözəl idi, biz gəzə bildik\" — iki müstəqil hissə, tabesiz mürəkkəb cümlə."},
 {q:"\"Həm... həm\" bağlayıcısı hansı növ bağlayıcıdır?",o:["Ayırıcı","Qarşılaşdırıcı","Birləşdirici","Açıqlayıcı"],a:2,t:"Sintaksis",e:"həm...həm — birləşdirici bağlayıcı. Həm A, həm B."},
@@ -1356,7 +2274,7 @@ const questionsMATH = [
 {q:"cos(90°-α) = ?",o:["cosα","sinα","tgα","-cosα"],a:1,t:"Triqonometriya",e:"cos(90°-α) = sinα."},
 {q:"Əgər A hadisəsinin ehtimalı 0.3-dürsə, onun tamamlayıcısının ehtimalı neçədir?",o:["0.3","0.7","0.5","1.3"],a:1,t:"Ehtimal",e:"P(Ā)=1-P(A)=1-0.3=0.7."},
 {q:"Kub tənliyinin ümumi forması hansıdır?",o:["ax²+bx+c=0","ax³+bx²+cx+d=0","ax+b=0","ax⁴+...=0"],a:1,t:"Tənlik",e:"Kub (3-cü dərəcəli) tənlik: ax³+bx²+cx+d=0."},
-{q:"Ağırlıq mərkəzi düsturu: mübtəda koordinatlar hansı qaydada tlır?",o:["Hər koordinatın orta qiyməti","Hər koordinatın hasili","Hər koordinatın kvadratı","Hər koordinatın cəmi"],a:0,t:"Analitik həndəsə",e:"Ağırlıq mərkəzi (centroid): G=((x₁+x₂+x₃)/3, (y₁+y₂+y₃)/3)."},
+{q:"Ağırlıq mərkəzi düsturu: mübtəda koordinatlar hansı qaydada tapılır?",o:["Hər koordinatın orta qiyməti","Hər koordinatın hasili","Hər koordinatın kvadratı","Hər koordinatın cəmi"],a:0,t:"Analitik həndəsə",e:"Ağırlıq mərkəzi (centroid): G=((x₁+x₂+x₃)/3, (y₁+y₂+y₃)/3)."},
 {q:"n=5 üçün 2ⁿ - 1 = ?",o:["15","31","63","127"],a:1,t:"Qüvvət",e:"2⁵-1=32-1=31."},
 {q:"Hansı ədəd 3-ə bölünür?",o:["124","125","126","127"],a:2,t:"Ədəd nəzəriyyəsi",e:"126: 1+2+6=9, 9÷3=3. Bölünür."},
 {q:"y = mx + b xəttinin y-oxunu kəsdiyi nöqtə hansıdır?",o:["(m,0)","(0,b)","(b,0)","(0,m)"],a:1,t:"Funksiya",e:"x=0 qoyanda y=b. Nöqtə (0,b)."},
@@ -1708,7 +2626,9 @@ const questionsEN = [
 
 // ============================================
 // TEST ENGINE — JAVASCRIPT
-// ===========================================
+// ============================================
+
+const API_KEY = "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";
 
 const SUBJECTS = {
   az:  {name:"Azərbaycan dili", icon:"🇦🇿", color:"#38d9a9", questions: null},
@@ -2763,5 +3683,4 @@ function backBlok(){
 </script>
 </body>
 </html>
-               
 
