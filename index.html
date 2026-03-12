@@ -70,34 +70,6 @@ og-bar"><div class="te-prog-fill" id="te-prog-fill" style="width:0%"></div></div
   </div>
 </div>
 
-<!-- AI SUAL-CAVAB PAGE -->
-<div class="page" id="page-ai">
-  <div class="ph">
-    <div class="ptag">🤖 AI Sual-Cavab</div>
-    <h1 class="ptitle">Hər sualın<br><em>cavabı var.</em></h1>
-    <p class="psub">İmtahana aid istənilən sualını ver — izahlı cavab al.</p>
-  </div>
-  <div class="ai-suggestions">
-    <button class="ai-sug" onclick="aiSuggest(this)">Mitoz nədir?</button>
-    <button class="ai-sug" onclick="aiSuggest(this)">log₂8 necə hesablanır?</button>
-    <button class="ai-sug" onclick="aiSuggest(this)">Present Perfect nə vaxt işlənir?</button>
-    <button class="ai-sug" onclick="aiSuggest(this)">Diskriminant düsturu</button>
-    <button class="ai-sug" onclick="aiSuggest(this)">Osmanlı dövlətinin süqutu</button>
-    <button class="ai-sug" onclick="aiSuggest(this)">Fotosintez mərhələləri</button>
-  </div>
-  <div class="ai-wrap">
-    <div class="ai-messages" id="ai-messages">
-      <div class="ai-msg">
-        <div class="ai-avatar bot">🤖</div>
-        <div class="ai-bubble bot">Salam! Mən Edaz Club AI köməkçisiyəm. İmtahana aid istənilən sualını ver — Azərbaycan dilində izahlı cavab verəcəyəm. 📚</div>
-      </div>
-    </div>
-    <div class="ai-input-row">
-      <textarea class="ai-input" id="ai-input" placeholder="Sualını yaz..." onkeydown="aiKeyDown(event)" rows="1"></textarea>
-      <button class="ai-send" id="ai-send-btn" onclick="sendAI()">➤</button>
-    </div>
-  </div>
-</div>
 
 </main>
 </div>
@@ -2328,78 +2300,6 @@ function spawnConfetti(){
     document.body.appendChild(el);
     setTimeout(()=>el.remove(),1600);
   }
-}
-
-// ── AI SUAL-CAVAB ──
-let aiHistory=[];
-
-async function sendAI() {
-  const input = document.getElementById('ai-input');
-  const msg = input.value.trim();
-  if (!msg) return;
-
-  input.value = '';
-  input.style.height = '44px';
-  document.getElementById('ai-send-btn').disabled = true;
-
-  appendAIMsg(msg, 'user');
-  const typing = appendTyping();
-
-  aiHistory.push({ role: 'user', content: msg });
-
-  try {
-
-
-    const data = await res.json();
-    typing.remove();
-
-    if (data.content && data.content[0]) {
-      const reply = data.content[0].text;
-      aiHistory.push({ role: 'assistant', content: reply });
-      appendAIMsg(reply, 'bot');
-    } else {
-      appendAIMsg('Xəta: ' + JSON.stringify(data.error), 'bot');
-    }
-  } catch (e) {
-    typing.remove();
-    appendAIMsg('Xəta: ' + e.message, 'bot');
-  }
-  document.getElementById('ai-send-btn').disabled = false;
-}
-
-function appendAIMsg(text,role){
-  const msgs=document.getElementById('ai-messages');
-  const div=document.createElement('div');
-  div.className='ai-msg '+role;
-  div.innerHTML=`
-    <div class="ai-avatar ${role}">${role==='bot'?'🤖':'👤'}</div>
-    <div class="ai-bubble ${role}">${text.replace(/\n/g,'<br>')}</div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop=msgs.scrollHeight;
-  return div;
-}
-
-function appendTyping(){
-  const msgs=document.getElementById('ai-messages');
-  const div=document.createElement('div');
-  div.className='ai-msg';
-  div.innerHTML=`
-    <div class="ai-avatar bot">🤖</div>
-    <div class="ai-bubble bot">
-      <div class="ai-typing"><span></span><span></span><span></span></div>
-    </div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop=msgs.scrollHeight;
-  return div;
-}
-
-function aiSuggest(el){
-  document.getElementById('ai-input').value=el.textContent;
-  sendAI();
-}
-
-function aiKeyDown(e){
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAI();}
 }
 
 // ── NAVIGATION: sp() tək, düzgün versiya ──
